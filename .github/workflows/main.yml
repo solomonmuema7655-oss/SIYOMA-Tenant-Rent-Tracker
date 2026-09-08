@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -24,8 +24,14 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Extract Android project from ZIP
+        run: |
+          unzip -q -o SIYOMA_Tenant_Rent_Tracker_V1.zip
+          chmod +x gradlew
+          echo "Project files:"
+          ls -la
+          echo "App module:"
+          ls -la app
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
