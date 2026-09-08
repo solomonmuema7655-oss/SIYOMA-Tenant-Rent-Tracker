@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -26,7 +26,7 @@ jobs:
 
       - name: Extract Android project from ZIP
         run: |
-          unzip -q -o SIYOMA_Tenant_Rent_Tracker_V1.zip
+          unzip -q -o SIYOMA_Tenant_Rent_Tracker_V1_FIXED.zip
           chmod +x gradlew
           echo "Project files:"
           ls -la
