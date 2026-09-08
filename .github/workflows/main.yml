@@ -24,14 +24,43 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Extract Android project from ZIP
+      - name: Find and extract project ZIP
         run: |
-          unzip -q -o SIYOMA_Tenant_Rent_Tracker_V1_KOTLIN_FIXED.zip
+          ZIP=$(find . -maxdepth 1 -type f -name 'SIYOMA_Tenant_Rent_Tracker_V1*.zip' | head -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "ERROR: No SIYOMA Tenant Rent Tracker ZIP found."
+            echo "Files in repository:"
+            ls -la
+            exit 1
+          fi
+
+          echo "Using ZIP: $ZIP"
+          unzip -q -o "$ZIP"
+
           chmod +x gradlew
+
           echo "Project files:"
           ls -la
+
           echo "App module:"
           ls -la app
+
+      - name: Fix Kotlin dependency conflict
+        run: |
+          cat >> app/build.gradle <<'EOF'
+
+          // SIYOMA FIX: Resolve Kotlin duplicate-class dependency conflict
+          configurations.configureEach {
+              resolutionStrategy.eachDependency { details ->
+                  if (details.requested.group == "org.jetbrains.kotlin") {
+                      details.useVersion("1.8.22")
+                  }
+              }
+          }
+          EOF
+
+          echo "Kotlin dependency fix applied."
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
